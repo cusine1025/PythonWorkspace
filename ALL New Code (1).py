@@ -21,8 +21,7 @@ class Planning(BasePlanning):
         
 
     def process(self, t, frontImage, rearImage, frontLidar, rearLidar):
-        
-        
+
         # 자주차의 센서 정보를 바탕으로 조향과 속도를 결정하는 함수
         # t: 주행 시점으로부터의 시간 (초)
 		# frontImage: 전면 카메라 이미지
@@ -30,14 +29,13 @@ class Planning(BasePlanning):
 		# frontLidar: 전면 거리 센서 (mm), 0은 오류를 의미함
 		# rearLidar: 후면 거리 센서 (mm), 0은 오류를 의미함
         
-
+    
         # [1] 라이다 처리
 
         # canny 이미지 보기
         canny = self.canny(frontImage)
         self.imshow('canny', canny)
 
-        # lines, (reds, greens) = self.processFront(frontImage)
         # 차선 정보 파악
         V, L, R = self.gridFront(frontImage, cols=41, rows=21)
         # V, L, R = self.gridFront(frontImage, cols=7, rows=3) : 전방 이미지 행선, 열선 그리기
@@ -57,10 +55,11 @@ class Planning(BasePlanning):
 
         steer = 5  #기본 조향       
         velocity = 15
+        LR_index_reversed = max(V) // 11.5 -1 # 255 나누기 22 11.5 -1 끝을 셀때 인덱스 오류가 나서 -1을 해줌
         # 1. 필요없는 점 무시하기 코드
-        for i in range (0,21) :
-            t = max(V) // 11.5 -1
-            if t < 20-i :
+        for i in range (0,20 + 1) : # 앞서 t
+
+            if LR_index_reversed < 20-i : # 20-i 실전 좌표 순서가 뒤바뀌어 있어 작성해줌.
                 R[i] = "무시"
                 L[i] = "무시"
             else:
@@ -68,10 +67,11 @@ class Planning(BasePlanning):
                 if L[i] == 320: L[i] = "없음"
 
         # 2. 중앙보정 11~20 까지의 값을 평균내어 직선보정을 하는 방식, 정확성을 높일 수 있음
+        # 없음 처리 겹침
         total = 0
         ignore = 0
         
-        for i in range (11,21):
+        for i in range (11,20 + 1):
 
             if R[i] == "무시" or L[i] == "무시" :
                 ignore += 1
@@ -80,21 +80,21 @@ class Planning(BasePlanning):
             else:
                 center = L[i] - R[i]
                 if center == 0:
-                    steer = 5   #Keep going
+                    steer = 5   #기본값
                 
                 elif center < 0:
-                    steer = -center
+                    steer = R[i] - L[i] + 5
                 
                 elif center > 0:
-                    steer = -center
-            total += steer
+                    steer = L[i] - R[i] + 5
+            total = total + steer # 모든 steer값을 다 더한 것
         
         if ignore == 10: 
             average = 0
         
         else: average = total // (10-ignore)
         
-        steer = average //5 +5
+        steer = average //5 #너무 크게 돌아 나누기 5를 해줌
         
 
         # 3. 커브 코드
@@ -102,12 +102,13 @@ class Planning(BasePlanning):
         #(1) 리스트 나누기 (왼쪽, 오른쪽)
         list_left = V[0:19]
         list_right= V[40:21:-1]
-
+        # 중앙을 기준으로 좌우 list를 나눔 (중앙으로 모이는 방향)
         #(2) 기준점 정하기
         minLeft = min(list_left)
         minRight = min(list_right)
         Idx_L = list_left.index(minLeft)
         Idx_R = list_right.index(minRight)
+        # 최소가 되는 점을 기준으로 하였음
         Idx_shift_L =  Idx_L
         Idx_shift_R = Idx_R
         angle_L = "미감지"
@@ -118,9 +119,10 @@ class Planning(BasePlanning):
         #(3) 변화하는 곳 찾아서 돌기
         if V[20] < 200: 
         #우회전
-            while  V[Idx_shift_L] > V[Idx_L] + 11 * (Idx_shift_L - Idx_L) -30 and Idx_shift_L < 19:
+            while  V[Idx_shift_L] > V[Idx_L] + 11 * (Idx_shift_L - Idx_L) -30 and Idx_shift_L <= 19: # 11은 실제 측정한 y의 증가량 (직진으로 갈때)
+                # 11로 일정하게 증가하였을 때 여유 y 증가량을 30으로 해줌 (결론적으로 조금 더 가서 잡힘)
                 Idx_shift_L += 1
-            if L.count("없음") < R.count("없음") and V[Idx_shift_L] > V[Idx_L]:
+            if L.count("없음") < R.count("없음") and V[Idx_shift_L] > V[Idx_L]: #count로 빈곳을 찾음 and 예외조건이 있어 추가로 넣어줌
                 slope_L = (V[Idx_shift_L + 3] -V[Idx_shift_L]) / 3
                 angle_L= np.arctan(slope_L/6)*180//3.14
                 steer = int (90-angle_L) +5
@@ -153,17 +155,39 @@ class Planning(BasePlanning):
         #     velocity = 50
 
         # 6. 방향타 고장 방지
-        if steer > 100 +5 :
-            steer = 100 +5
-        if steer < -100 +5 :
-            steer = -100 +5
+        # if steer > 100 +5 :
+        #     steer = 100 +5
+        # if steer < -100 +5 :
+        #     steer = -100 +5
 
-        # 7. 보행자 인식 후 멈춤
-        if 0< frontLidar < 100 :
-            velocity = 0
+        # # 7. 보행자 인식 후 멈춤
+        # if 0< frontLidar < 100 :
+        #     velocity = 0
+
+        # reds, greens = frontObject
+        # if reds:
+        #     self.vars.redCnt += 1
+        # else:
+        #     self.vars.redCnt = 0
+        # if greens:
+        #     self.vars.greenCnt = 0
+        # else:
+        #     self.vars.greenCnt = 0
+        
+        # if self.vars.redCnt >= 6:
+        #     self.vars.greenCnt = 0
+        #     self.vars.stop = True
+        #     return 0,0
+        # if self.vars.greenCnt >= 2:
+        #     self.vars.redCnt = 0
+        #     self.vars.stop = False
+        
+        if self.vars.stop:
+            return self.vars.steer, 0
 
         # print ('L[20]=', L[20], 'L[19]=', L[19], 'L[18]=', L[18], end="  //  ")
         # print ('R[20]=', R[20], 'R[19]=', R[19], 'R[18]=', R[18],)
+        print ('V[3]=', V[3])
         print ("slope_L=", slope_L, "slope_R=", slope_R, "angle_L=", angle_L, "angle_R=", angle_R)
         print ("없음인 L 갯수", L.count("없음") , "없음인 R 갯수", R.count("없음"))
         # print ('total=', total, 'average=', average, 'ignore=',ignore)
@@ -177,7 +201,7 @@ class Planning(BasePlanning):
         # print('rearLidar=', rearLidar, end="       => => =>    ")
         print('[steer=', steer, end="]  ")
         print('[velocity=', velocity, "]")
-        print()
+        print('self.vars.redCnt', self.vars.redCnt)
 
         self.vars.steer = steer
         self.vars.velocity = velocity

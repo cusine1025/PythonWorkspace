@@ -34,7 +34,7 @@ class Planning(BasePlanning):
         self.imshow('canny', canny)
 
         # 차선 정보 파악
-        V, L, R = self.gridFront(frontImage, cols=7, rows=3)
+        V, L, R = self.gridFront(frontImage, cols=41, rows=21)
         # V, L, R = self.gridFront(frontImage, cols=7, rows=3) : 전방 이미지 행선, 열선 그리기
         # rearV, rearL, rearR = self.gridRear(rearImage, cols=4, rows=6) : 후방 이미지도 가능
         # rows : 행선값  cols : 열선값 (row, column) ex) rows=3 : 행선이 3개이고, 총 4개의 행 칸이 생성
