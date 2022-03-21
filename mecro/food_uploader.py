@@ -2,6 +2,7 @@
 from selenium import webdriver
 from urllib.request import urlretrieve
 from ctypes import windll
+from selenium.webdriver.common.keys import Keys
 
 # 웹 드라이버 실행
 driver = webdriver.Chrome('C:\\chromedriver')
@@ -27,10 +28,8 @@ try:
 except:
     pass
 
-enter_x_path = "//*[contains(@onclick,'location.href=\'board_msg.php?db=1903&action=list\'')]"
-driver.find_element_by_xpath(enter_x_path).click()
 # 메뉴 화면의 급식 게시판 1번째 클릭
-xpath = "//*[contains(text(),'주간메뉴표')]"
+xpath = 'br.find_element_by_xpath("//*[contains(@onclick,\'3월4주 주간메뉴표\')]").click()'
 driver.find_element_by_xpath(xpath).click()
 
 # 이미지 주소가 있는 html 주소를 입력하여 이미지 주소 퍼오기

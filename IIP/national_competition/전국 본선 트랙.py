@@ -66,54 +66,67 @@ class Planning(BasePlanning):
         #     steer = 100
         # elif steer < -100:
         #     steer = -100
-        
+        standard_steer = 5
+        steer = standard_steer
+        velocity = 70
         # 오른쪽 차선을 기준으로 왼쪽으로 턴하기
-        if V[4] < 40:
-            steer = 140 - V[4]
+        # junmo = L.count(320)
+        # cheondohyun = R.count(321)
+        # hyungjoo = V.count(255)
+
+        if V[10] < 60:
+            steer = 100 - V[10]
+        # 1. 필요없는 점 무시하기 코드
+        for i_1 in range (0,21) :
+            t = max(V) // 11.5 -1 
+            if t < 20-i_1 :
+                R[i_1] = "무시"
+                L[i_1] = "무시"
+
+    
+        
+        #(1) 리스트 나누기 (왼쪽, 오른쪽)
+        list_left = V[0:19]
+        list_right= V[40:21:-1]
+
+        #(2) 기준점 정하기
+        minLeft = min(list_left)
+        minRight = min(list_right)
+        Idx_L = list_left.index(minLeft)
+        Idx_R = list_right.index(minRight)
+
+        # (1) 1번 삼거리 
+        if L.count(325) >= 7 and V.count(255) >= 3 :
+            velocity = 50
+            bunmo= V[20] // 10
+            if 240 <= V[20] <=255 and L.count(325) <= 16: steer =  -100 + standard_steer
+            elif (Idx_L >= 5 and  V[20] > 200): steer = -100 +standard_steer
+            elif Idx_L >= 15: steer = -100 + standard_steer      #elif 구문 2개 없어도 되지 않을까?
+
+        if V[35] < 60:
+            steer = -100 + standard_steer
 
         # 왼쪽 차선을 기준으로 오른쪽으로 턴하기
-        if V[2] < 40:
+        if V[5] < 60:
+            steer = 100 + standard_steer
 
-            steer = 140 - V[2]
 
-        else :
-            j_right = 0
-        
-        # # 왼쪽 좌표 인식 X, 차선 거리 가까울 때 왼쪽 턴
-        # if L[2] == 320 and L[1] == 320:
-        #     l_angle = 0
-        #     if V[3] < 140:
-        
-        #         l_angle = 200 
-        # else:
-        #     l_angle = 0
 
-        # # 오른쪽 좌표 인식 X, 차선 거리 가까울 때 오른쪽 턴
-        # if R[2]== 320 and R[1] == 320:
-        #     r_angle = 0
-        #     if V[3] < 140:
-        #         r_angle = 200 - V[3]
-        # else:
-        #     r_angle = 0
-
-        # 조정 15, 각 값들의 밸런스 조정 필요( 경험 필요 )
-        # steer = 0 누가 넣어놨어!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        steer = 90
-        velocity = 0
         # 현재 부족한 점 : steer 값에 따른 바퀴의 회전 각도, 밸런스 조정이 안되어 이탈 가능, 더 많은 경우의 수 수집 요망
 
-        # if frontLidar < 100 :
-        #     velocity = -50
+        if 0 < frontLidar < 150 :
+            velocity = 0
+
 
         print ('L[0]=', L[0], 'L[1]=', L[1], 'L[2]=', L[2], end="  //  ")
         print ('R[0]=', R[0], 'R[1]=', R[1], 'R[2]=', R[2])
         print ('V[0]=', V[0], 'V[1]=', V[1], 'V[2]=', V[2], 'V[3]=', V[3], 'V[4]=', V[4], 'V[5]=', V[5], 'V[6]=', V[6])
         print('frontLidar=', frontLidar, end="..//..")
         print('rearLidar=', rearLidar, end="       => => =>    ")
-        print('[j_right =', j_right, end="]  ")
         print('[steer=', steer, end="]  ")
         print('[velocity=', velocity, "]")
-        print()
+        print(L[20], R[20])
+        print(L.count(325), R.count(316))
 
         self.vars.steer = steer
         self.vars.velocity = velocity

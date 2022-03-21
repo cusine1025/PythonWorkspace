@@ -62,7 +62,7 @@ class LaneDetector:
         return
         cv2.imshow(self.name + name, img)
 
-    def canny(self, img, par1=200, par2=400):
+    def canny(self, img, par1 = 300, par2=600):
         l = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)[:, :, 1]
         blur = cv2.bilateralFilter(l, 7, 10, 20)
         edge = cv2.Canny(blur, par1, par2)
@@ -72,7 +72,7 @@ class LaneDetector:
         """undistorted image => lines"""
         # Image Transformation
         # edge = cv2.Canny(blur, 300, 500)
-        edge = self.canny(img, 200, 400)
+        edge = self.canny(img, 300, 600)
         warp = self.cam.warpImg(edge)
         self.imshow('warp', warp)
 
@@ -447,7 +447,7 @@ class BasePlanning:
         self._front_img = frontImage.copy()
         self._rear_img = rearImage.copy()
 
-    def process(self, time, frontImage, rearImage, frontLidar, rearLidar,frontObject):
+    def process(self, time, frontImage, rearImage, frontLidar, rearLidar):
         frontLines, frontObject = self.processFront(frontImage)
         rearLines = self.processRear(rearImage)
 
@@ -459,7 +459,7 @@ class BasePlanning:
         self.graphics.setFrontImage2(self._front_img)
         self.graphics.setRearImage2(self._rear_img)
 
-    def canny(self, img, par1=200, par2=400):
+    def canny(self, img, par1=300, par2=600):
         l = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)[:, :, 1]
         blur = cv2.bilateralFilter(l, 7, 10, 20)
         edge = cv2.Canny(blur, par1, par2)
