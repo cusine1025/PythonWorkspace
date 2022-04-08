@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+	<html>
+	  	<head>
+	    	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>	
+	    	<script type="text/javascript">	
+    var accessTaken = 'none';																			
+     getAccessToken();		
+    function getAccessToken(){												
+        jQuery.ajax({																												
+            type:'GET', 																											
+            url: 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json',													
+            data:{																													
+            consumer_key : 'b4a54cd31f284986ab01',																					
+            consumer_secret : '6369edd8eee64c838b29',																				
+            },
+            success:function(data){																									
+     			errCnt = 0;																									
+     			accessToken = data.result.accessToken														
+     			alert(accessToken);		
+            }
+        });
+    }
+
+
+        </script>	
+	  	</head>	
+	  	<body>	
+	    	<div id="chart" style="width: 100%; height: 500px"></div>	
+	  	</body>	
+	</html>

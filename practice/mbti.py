@@ -1,2 +1,6 @@
-a = 1.2345
-print(int(a))
+a = input()
+b = a.split('')
+b = ['1','2']
+c = int(b[0]) + int(b[1])
+
+print(c)

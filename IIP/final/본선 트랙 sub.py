@@ -68,7 +68,7 @@ class Planning(BasePlanning):
         #     steer = -100
         standard_steer = 5
         steer = standard_steer
-        velocity = 60
+        velocity = 70
         # 오른쪽 차선을 기준으로 왼쪽으로 턴하기
         # junmo = L.count(320)
         # cheondohyun = R.count(321)
@@ -90,26 +90,29 @@ class Planning(BasePlanning):
         R_index = R.index(R_right_min)
 
         # (1) 1번 삼거리
-        if  L_index + 1 != R_index:
-            if L.count(325) >= 10: #and V.count(255) >= 3 :
-                velocity = 50
-                if V.count(255) >= 4 and L.count(325) <= 16: steer =  -100 + standard_steer
-                elif Idx_L >= 15: steer = -100 + standard_steer 
-                elif Idx_L >= 3 and V[20] < 200: steer = -80 +standard_steer
+        if frontLidar <= 3000:
+            steer = -70
+        
+            
+        if L.count(325) >= 10: #and V.count(255) >= 3 :
+            velocity = 50
+            if V.count(255) >= 4 and L.count(325) <= 16: steer =  -100 + standard_steer
+            elif Idx_L >= 15: steer = -100 + standard_steer
+            elif Idx_L >= 3 and V[20] < 200: steer = -80 +standard_steer
 
                 #elif 구문 2개 없어도 되지 않을까?
         # if V.count(255) >= 3 and L.count(325) >= 17 and R.count(255) <= 5:
         #     steer = -70
-        if V.count(255) <= 3:
+        # if V.count(255) <= 3:
 
-            if V[35] < 60:
-                steer = -80 + standard_steer
+        if V[35] < 70:
+            steer = -80 + standard_steer
 
-            if V[5] < 60:
-                steer = 80 + standard_steer
+        if V[5] < 70:
+            steer = 80 + standard_steer
 
         if V[20] < 80 and V[10] > V[30]: steer = -90
-        if V[20] < 80 and V[30] > V[10]: steer = 90 
+        if V[20] < 80 and V[30] > V[10]: steer = 90
 
 
 
@@ -128,6 +131,7 @@ class Planning(BasePlanning):
         print('[velocity=', velocity, "]")
         print(L[20], R[20])
         print(L.count(325), R.count(316))
+        print(R_index, L_index)
 
         self.vars.steer = steer
         self.vars.velocity = velocity

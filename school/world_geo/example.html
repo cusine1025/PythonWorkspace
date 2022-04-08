@@ -4,7 +4,8 @@
 	<meta charset='utf-8'>	
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>	
 	<script type='text/javascript' src='https://code.jquery.com/jquery-latest.js'></script>		
-	<script type='text/javascript' src='https://sgisapi.kostat.go.kr/OpenAPI3/auth/javascriptAuth?consumer_key=b4a54cd31f284986ab01'></script>	
+	<script type='text/javascript' src='https://sgisapi.kostat.go.kr/OpenAPI3/auth/javascriptAuth?
+consumer_key=[사용자서비스키]'></script>	
 </head>	
 <body>	
 	<div id='map' style='width:100%-20px;height:400px'></div>	
@@ -12,23 +13,7 @@
 	<script type='text/javascript'>	
 				var marker = null;	
 				var changeFlag = true;	
-				var layer;																		
-     			accessToken = getAccessToken();		
-    			function getAccessToken(){												
-        			jQuery.ajax({																												
-            			type:'GET', 																											
-            			url: 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json',													
-						data:{																													
-						consumer_key : 'b4a54cd31f284986ab01',																					
-						consumer_secret : '6369edd8eee64c838b29',																				
-						},
-						success:function(data){																									
-							errCnt = 0;																									
-							accessToken = data.result.accessToken														
-							return accessToken	
-						}
-					});
-				}
+				var layer;	
 				function changeMode(){	
 						if(changeFlag){	
 							changeFlag = false;	
@@ -59,7 +44,7 @@
 					 var html = '<p> coord x :'+x_coor+' , y :'+y_coor+'</p>';	
 	
 	
-					 accessToken = accessToken;	
+					 accessToken = '[accessToken 입력]';	
 					if(null!=marker){	
 						marker.remove();	
 					}	
