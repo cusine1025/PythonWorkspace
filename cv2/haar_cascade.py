@@ -5,7 +5,7 @@ faceCascade = cv2.CascadeClassifier('C:\\Users\\gram_\\AppData\\Roaming\\Python\
 def detect(gray, frame):
 
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100,100), flags=cv2.CASCADE_SCALE_IMAGE)
-
+    
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x,y), (x+w, y + h), (255,0,0), 2)
 
