@@ -51,13 +51,11 @@ class RandomSeats:
                 globals()['lab{},{}'.format(repeat_row,repeat_col)] = \
                 Label(root, textvariable= globals()['text{},{}'.format(repeat_row,repeat_col)],
                       font = tkFont.Font(size = 20, weight = "bold"))\
-                .grid(row = repeat_row, column = repeat_col,
-                      padx = int(monitor_width//24), pady = int(monitor_height//20) )
+                    .grid(row = repeat_row, column = repeat_col,
+                          padx = int(monitor_width//24), pady = int(monitor_height//20) )
 
     # 텍스트를 바꾸는 함수 지정
     def changeText(self):
-        
-        
         
         try:
             btn.place_forget()
