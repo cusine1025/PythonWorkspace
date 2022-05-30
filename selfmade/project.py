@@ -20,3 +20,4 @@ for i in word_list:
             break
     else:
         print('오답입니다')
+        enumerate
