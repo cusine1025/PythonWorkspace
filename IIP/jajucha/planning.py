@@ -62,7 +62,7 @@ class LaneDetector:
         return
         cv2.imshow(self.name + name, img)
 
-    def canny(self, img, par1 = 300, par2=600):
+    def canny(self, img, par1 = 300, par2 = 600):
         l = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)[:, :, 1]
         blur = cv2.bilateralFilter(l, 7, 10, 20)
         edge = cv2.Canny(blur, par1, par2)

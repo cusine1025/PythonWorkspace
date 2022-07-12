@@ -8,8 +8,8 @@ write_ws = write_wb.create_sheet('세계지리통계')
 write_ws = write_wb.active
 
 # Open API에 인증키와 비밀키를 입력하여 자료요청에 필요한 엑세스 토큰을 얻기
-consumer_key = ''
-consumer_secret = ''
+consumer_key = 'd5da57f9d59d4a909f45'
+consumer_secret = 'd08d1b3e7cb845bebeb5'
 data = requests.get('https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json'
     + '?' + 'consumer_key=' + consumer_key + '&consumer_secret=' + consumer_secret)
 contents = data.text
