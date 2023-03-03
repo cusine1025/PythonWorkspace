@@ -18,7 +18,7 @@ root.geometry("{}x{}+0+0".format(monitor_width, monitor_height))
 
 # 반 이름 리스트 선언(여자, 남자)
 try:
-    with open("list.txt", "r") as file:
+    with open("/list.txt", "r") as file:
         contents = file.read()
     l1 = contents.split(sep = ',')
 except:
